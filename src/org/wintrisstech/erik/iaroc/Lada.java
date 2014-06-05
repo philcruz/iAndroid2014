@@ -49,7 +49,9 @@ public class Lada extends IRobotCreateAdapter {
 		myRobot = new Robot(dashboard, this);
 		myRobot.log("iAndroid2014 version 0.0.1");
 		myRobot.log("Ready!");
-		myRobot.goForward(10);
+		//myRobot.speak("Hi.Cameron!");
+		//myRobot.goForward(10);
+		//myRobot.rotateRight();
 		myRobot.log("I'm done.");
 	}
 
@@ -59,9 +61,9 @@ public class Lada extends IRobotCreateAdapter {
 	 * @throws ConnectionLostException
 	 */
 	public void loop() throws ConnectionLostException {
-		
 		//SystemClock.sleep(100);
 		//dashboard.log(String.valueOf(readCompass()));
+		myRobot.turnToHeading(5);
 	}
 
 	public void turn(int commandAngle) throws ConnectionLostException //Doesn't work for turns through 360
