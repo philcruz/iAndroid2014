@@ -3,7 +3,7 @@ package org.wintrisstech.erik.iaroc;
 import ioio.lib.api.exception.ConnectionLostException;
 
 /**************************************************************************
- * A class to abstract an  higher level API to control the robot
+ * A class to abstract an  higher level API to control the robot *
  **************************************************************************/
 public class Robot {
 	
@@ -48,28 +48,19 @@ public class Robot {
 		lada.driveDirect(0, 0);
 	}
 	
-	public void turnToHeading(int desiredHeading) throws ConnectionLostException
-	{
+	public void followHeading(int desiredHeading) throws ConnectionLostException {
+		int desiredLeftDistance = lada.sonar.getLeftDistance();
 		int currentHeading = readCompass();
-		int delta = currentHeading - desiredHeading;
-		log("Current Heading:" + currentHeading);
-		if  (delta <= 3 )
-		{
-			stop();
-			TURN_SPEED = 1;
-		}
-		else
-		{
-			if (delta > 0 && delta <= 180 || delta < 0 && delta >= 180)
-			{
-				rotateLeft();
-			}
-			else
-			{
-				rotateRight();
-			}
+		if(currentHeading < desiredHeading){
+			lada.turn(10);
+			desiredHeading++;
+		}else if(currentHeading > desiredHeading){
+			lada.turn(-10);
+			desiredHeading--;
 		}
 	}
+	
+	
 	
 	public int readCompass() {
 		return (int) (dashboard.getAzimuth() + 360) % 360;
@@ -84,4 +75,20 @@ public class Robot {
 	{
 		lada.driveDirect(TURN_SPEED,-TURN_SPEED); 
 	}
+	public void goStraight(int startHeading) throws ConnectionLostException{
+		dashboard.log(dashboard.getAzimuth() + "");
+		if(startHeading < dashboard.getAzimuth()){
+			lada.driveDirect(170, 80);
+			dashboard.log("right");
+		}
+		if(startHeading > dashboard.getAzimuth()){
+			lada.driveDirect(80, 170);
+			dashboard.log("left");
+		}
+		
+	}
+//	public void turn(int deg){
+//		int endHeading = dashboard.getAzimuth() + deg;
+//		while(dashboard.getAzimuth() < )
+//	}
 }
