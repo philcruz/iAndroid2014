@@ -10,14 +10,25 @@ public class Robot {
 	private Lada lada;
 	private final Dashboard dashboard;
 	private int TURN_SPEED = 25;
+	
+	//for maintain heading
+	private int initialHeading;
+	public int leftSpeed = 0;
+	public int rightSpeed = 0;
 
 
 	public Robot(Dashboard dashboard, Lada lada)
 	{
 		this.dashboard = dashboard;
 		this.lada = lada;
+		this.initialHeading = readCompass();
 	}
 	
+
+	public int getInitialHeading() {
+		return initialHeading;
+	}
+
 	public void log(String message)
 	{
 		dashboard.log(message);
@@ -83,5 +94,45 @@ public class Robot {
 	public void rotateLeft() throws ConnectionLostException
 	{
 		lada.driveDirect(TURN_SPEED,-TURN_SPEED); 
+	}
+	
+	//fixes lada.driveDirect() by switching the order of the arguments
+	public void driveDirect(int left, int right) throws ConnectionLostException
+	{
+		lada.driveDirect(right, left);
+	}
+	
+	
+	//gets called on an interval
+	//adjusts the left/right wheel speed
+	public void maintainHeadingLogic()
+	{
+		
+		int current = readCompass();
+		dashboard.log("current heading: " + current);
+		int delta = initialHeading - current;
+		dashboard.log("    delta: " + delta);
+		
+		if(delta >= 2){
+			leftSpeed = leftSpeed + 10;
+			rightSpeed = 100;
+			dashboard.log("steering right...");
+		}
+		else if(delta <= -2){
+			rightSpeed = rightSpeed + 10;
+			leftSpeed = 100;
+			dashboard.log("steering left...");
+		} else
+		{
+			rightSpeed = 100;
+			leftSpeed = 100;
+		}
+		
+	}
+	
+	//
+	public void maintainHeading() throws ConnectionLostException
+	{
+		driveDirect(leftSpeed, rightSpeed);
 	}
 }

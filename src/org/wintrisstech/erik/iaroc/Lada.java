@@ -10,7 +10,7 @@ import org.wintrisstech.irobot.ioio.IRobotCreateAdapter;
 import org.wintrisstech.irobot.ioio.IRobotCreateInterface;
 import org.wintrisstech.sensors.UltraSonicSensors;
 
-import android.os.SystemClock;
+import java.util.TimerTask;
 
 /**
  * A Lada is an implementation of the IRobotCreateInterface, inspired by Vic's
@@ -52,7 +52,20 @@ public class Lada extends IRobotCreateAdapter {
 		//myRobot.speak("Hi.Cameron!");
 		//myRobot.goForward(10);
 		//myRobot.rotateRight();
-		myRobot.log("I'm done.");
+		
+		java.util.Timer t = new java.util.Timer();
+		t.schedule(new TimerTask() {
+
+		            @Override
+		            public void run() {
+		                //myRobot.log("This will run every 5 seconds");
+		            	myRobot.maintainHeadingLogic();
+
+		            }
+		        }, 1000, 1000);
+		myRobot.rightSpeed = 100;
+		myRobot.leftSpeed = 100;
+		myRobot.log("exiting initialize()...");
 	}
 
 	/**
@@ -63,7 +76,9 @@ public class Lada extends IRobotCreateAdapter {
 	public void loop() throws ConnectionLostException {
 		//SystemClock.sleep(100);
 		//dashboard.log(String.valueOf(readCompass()));
-		myRobot.turnToHeading(5);
+		//myRobot.turnToHeading(5);
+		
+		myRobot.maintainHeading();
 	}
 
 	public void turn(int commandAngle) throws ConnectionLostException //Doesn't work for turns through 360
