@@ -6,9 +6,12 @@ package org.wintrisstech.erik.iaroc;
  **************************************************************************/
 import ioio.lib.api.IOIO;
 import ioio.lib.api.exception.ConnectionLostException;
+
 import org.wintrisstech.irobot.ioio.IRobotCreateAdapter;
 import org.wintrisstech.irobot.ioio.IRobotCreateInterface;
 import org.wintrisstech.sensors.UltraSonicSensors;
+
+import android.os.SystemClock;
 
 import java.util.TimerTask;
 
@@ -46,12 +49,16 @@ public class Lada extends IRobotCreateAdapter {
 
 	public void initialize() throws ConnectionLostException {
 	
-		myRobot = new Robot(dashboard, this);
+		myRobot = new Robot(dashboard, this, sonar);
 		myRobot.log("iAndroid2014 version 0.0.1");
 		myRobot.log("Ready!");
 		//myRobot.speak("Hi.Cameron!");
 		//myRobot.goForward(10);
 		//myRobot.rotateRight();
+		
+		if (false)
+		{
+			
 		
 		java.util.Timer t = new java.util.Timer();
 		t.schedule(new TimerTask() {
@@ -63,6 +70,7 @@ public class Lada extends IRobotCreateAdapter {
 
 		            }
 		        }, 1000, 1000);
+		}
 		myRobot.rightSpeed = 100;
 		myRobot.leftSpeed = 100;
 		myRobot.log("exiting initialize()...");
@@ -72,13 +80,24 @@ public class Lada extends IRobotCreateAdapter {
 	 * This method is called repeatedly
 	 * 
 	 * @throws ConnectionLostException
+	 * @throws InterruptedException 
 	 */
-	public void loop() throws ConnectionLostException {
-		//SystemClock.sleep(100);
+	public void loop() throws ConnectionLostException, InterruptedException {
+		
+		myRobot.followStraightWall(100, 15, 1, 10, "right", 200);
 		//dashboard.log(String.valueOf(readCompass()));
 		//myRobot.turnToHeading(5);
+//		
+//		myRobot.maintainHeading();
+//		SystemClock.sleep(100);
+//		myRobot.log("Front Distance: " + myRobot.getFrontDistance());
+//		SystemClock.sleep(100);
+//		
+//		myRobot.log("Right Distance: " + myRobot.getRightDistance());
+//		SystemClock.sleep(100);
+//		myRobot.log("Left Distance: " + myRobot.getLeftDistance());
 		
-		myRobot.maintainHeading();
+		
 	}
 
 	public void turn(int commandAngle) throws ConnectionLostException //Doesn't work for turns through 360

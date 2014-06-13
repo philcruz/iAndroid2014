@@ -1,5 +1,8 @@
 package org.wintrisstech.erik.iaroc;
 
+import org.wintrisstech.sensors.UltraSonicSensors;
+
+import android.os.SystemClock;
 import ioio.lib.api.exception.ConnectionLostException;
 
 /**************************************************************************
@@ -9,6 +12,7 @@ public class Robot {
 	
 	private Lada lada;
 	private final Dashboard dashboard;
+	private UltraSonicSensors sonar;
 	private int TURN_SPEED = 25;
 	
 	//for maintain heading
@@ -17,10 +21,11 @@ public class Robot {
 	public int rightSpeed = 0;
 
 
-	public Robot(Dashboard dashboard, Lada lada)
+	public Robot(Dashboard dashboard, Lada lada, UltraSonicSensors sonar)
 	{
 		this.dashboard = dashboard;
 		this.lada = lada;
+		this.sonar = sonar;
 		this.initialHeading = readCompass();
 	}
 	
@@ -101,7 +106,43 @@ public class Robot {
 	{
 		lada.driveDirect(right, left);
 	}
-	
+	public void followStraightWall(int speed, int turnSpeed, int bufferDis, int distance, String side, int sleepTime) throws ConnectionLostException, InterruptedException{
+		if(side.equalsIgnoreCase("right")){
+			int right = this.getRightDistance();
+			int delta = right - distance;
+			if(delta > bufferDis){
+				leftSpeed = speed + turnSpeed;
+				rightSpeed = speed - turnSpeed;
+			}else if(delta < bufferDis){
+				leftSpeed = speed - turnSpeed;
+				rightSpeed = speed + turnSpeed;
+			}else{
+				leftSpeed = speed;
+				rightSpeed = speed;
+			}
+			
+		}else if(side.equalsIgnoreCase("left")){
+			int left = this.getLeftDistance();
+			int delta = left - distance;
+			if(delta > bufferDis){
+				leftSpeed = speed + turnSpeed;
+				rightSpeed = speed - turnSpeed;
+			}else if(delta < bufferDis){
+				leftSpeed = speed - turnSpeed;
+				rightSpeed = speed + turnSpeed;
+			}else{
+				leftSpeed = speed;
+				rightSpeed = speed;
+			}
+			
+		}else{
+			leftSpeed = 0;
+			rightSpeed = 0;
+			dashboard.log("STUPID: LEARN TO SPEL");
+		}
+		this.driveDirect(leftSpeed, rightSpeed);
+		SystemClock.sleep(sleepTime);
+	}
 	
 	//gets called on an interval
 	//adjusts the left/right wheel speed
@@ -134,5 +175,23 @@ public class Robot {
 	public void maintainHeading() throws ConnectionLostException
 	{
 		driveDirect(leftSpeed, rightSpeed);
+	}
+	
+	public int getLeftDistance() throws ConnectionLostException, InterruptedException
+	{
+		this.sonar.read();
+		return this.sonar.getLeftDistance();
+	}
+	
+	public int getRightDistance() throws ConnectionLostException, InterruptedException
+	{
+		this.sonar.read();
+		return this.sonar.getRightDistance();
+	}
+	
+	public int getFrontDistance() throws ConnectionLostException, InterruptedException
+	{
+		this.sonar.read();
+		return this.sonar.getFrontDistance();
 	}
 }
